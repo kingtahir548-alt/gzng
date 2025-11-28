@@ -68,18 +68,18 @@
         <div class="text-right"><h3 class="font-bold text-gray-800" id="notifTitle">تۆمارکرا!</h3><p id="notifText" class="text-sm text-gray-500">بە سەرکەوتوویی نێردرا.</p></div>
     </div>
 
-    <script type="module">
+    <script>
         // ==========================================
         // GOOGLE APPS SCRIPT (GAS) CONFIGURATION
         // ==========================================
-        // 🚨 ئەمە ئەو URLـەیە کە تۆ ناردت و ئێستا پەیوەندی بە Backendـەوە دەکات
+        // 🚨 ئەمە دەبێت URLـی ڕاستەقینەی تۆ بێت! (ئەو لینکەی ناردت)
         const GAS_URL = "https://script.google.com/macros/s/AKfycbwFZUOKlIFveT-W4E1HbOsNZSENoxG8kKeetUGZ8OzmNaHkFFTWYRFBu4P5orZkNE0Y/exec";
         
         // ==========================================
         // GLOBAL STATE & CONSTANTS
         // ==========================================
         const LOGO_URL = 'logo.png';
-        const STORAGE_KEY = 'gzng-sheets-v1'; // گۆڕدرا بۆ ئەوەی جیاواز بێت لە Firebase
+        const STORAGE_KEY = 'gzng-sheets-v1'; 
 
         let state = {
             currentView: 'teacher', 
@@ -99,7 +99,7 @@
         };
         
         // ==========================================
-        // HELPER FUNCTIONS (No Changes Here)
+        // HELPER FUNCTIONS 
         // ==========================================
         function parseDate(dateStr) { return dateStr ? dateStr.split('T')[0] : new Date().toISOString().split('T')[0]; }
         function getLessonName(activity) {
@@ -113,6 +113,8 @@
             localStorage.setItem('gzng-theme', state.theme);
             render();
         }
+        
+        // Drag functions for report image pan (stopDrag is now globally available)
         let drag = { active: false, idx: -1, startX: 0, startY: 0, initialX: 50, initialY: 50 };
         function startDrag(e, index) {
             drag.active = true;
@@ -133,7 +135,7 @@
             state.report.imgSettings[drag.idx].y = Math.max(0, Math.min(100, drag.initialY + dy));
             render();
         }
-        function stopDrag() { drag.active = false; drag.idx = -1; }
+        function stopDrag() { drag.active = false; drag.idx = -1; } // This is now a global function
 
         function validateForm() { 
             let valid = true; 
@@ -192,7 +194,7 @@
         }
 
         // ==========================================
-        // GAS CRUD FUNCTIONS (The Core Changes)
+        // GAS CRUD FUNCTIONS 
         // ==========================================
 
         async function loadActivities() {
@@ -213,10 +215,9 @@
                     throw new Error(loadedActivities.message || "کێشە لە خوێندنەوەی شیتەکە.");
                 }
 
-                // زیادکردنی ID بۆ چالاکییەکان ئەگەر نەیانبوو، بەڵام پێویستە لە شیتەکەدا هەبێت
                 state.activities = loadedActivities.map(a => ({ 
                     ...a, 
-                    id: a.id || (a.teacherName + a.date + a.lessonNumber + Date.now()).replace(/\s/g, "") // بۆ دڵنیایی
+                    id: a.id || (a.teacherName + a.date + a.lessonNumber + Date.now()).replace(/\s/g, "") 
                 }));
                 
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(state.activities));
